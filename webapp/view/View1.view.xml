@@ -1,0 +1,181 @@
+<mvc:View controllerName="vcpapp.vcpobpfioriapp.controller.View1"
+   xmlns:mvc="sap.ui.core.mvc"
+    xmlns="sap.m"
+    xmlns:l="sap.ui.layout"
+    xmlns:f="sap.ui.layout.form"
+    xmlns:u="sap.ui.unified"
+    xmlns:core="sap.ui.core">
+    
+    <Page id="_IDGenPage"
+        title="{i18n>appTitle}"
+        class="sapUiResponsiveContentPadding">
+        
+        <content>
+            <l:Grid id="_IDGenGrid" defaultSpan="L6 M12 S12" class="sapUiSmallMarginTop">
+                
+                <!-- Download Templates Panel -->
+                <Panel id="_IDGenPanel" headerText="{i18n>downloadTemplatesTitle}" class="sapUiSmallMargin">
+                    <content>
+                        <VBox id="_IDGenVBox" class="sapUiSmallMargin">
+                            <Text id="_IDGenText" text="{i18n>downloadTemplatesText}" class="sapUiSmallMarginBottom"/>
+                            <HBox id="_IDGenHBox">
+                                <Button id="_IDGenButton" 
+                                    text="{i18n>downloadSampleData}" 
+                                    type="Emphasized"
+                                    press="onDownloadSampleData"
+                                    class="sapUiTinyMarginEnd"/>
+                                <Button id="_IDGenButton1" 
+                                    text="{i18n>downloadResultsTemplate}" 
+                                    type="Success"
+                                    press="onDownloadResultsTemplate"/>
+                            </HBox>
+                        </VBox>
+                    </content>
+                </Panel>
+                
+                <!-- Upload Data Panel -->
+                <Panel id="_IDGenPanel1" headerText="{i18n>uploadDataTitle}" class="sapUiSmallMargin">
+                    <content>
+                        <VBox id="_IDGenVBox1" class="sapUiSmallMargin">
+                            <Text id="_IDGenText1" text="{i18n>uploadDataText}" class="sapUiSmallMarginBottom"/>
+                            <u:FileUploader 
+                                id="fileUploader"
+                                name="file"
+                                tooltip="{i18n>uploadTooltip}"
+                                uploadComplete="onUploadComplete"
+                                change="onFileChange"
+                                fileType="xlsx"
+                                placeholder="{i18n>uploadPlaceholder}"
+                                style="Emphasized"
+                                uploadOnChange="false"/>
+                            <Button id="_IDGenButton2" 
+                                text="{i18n>uploadButton}" 
+                                press="onUploadPress"
+                                type="Emphasized"
+                                class="sapUiSmallMarginTop"/>
+                            <ProgressIndicator
+                                id="uploadProgress"
+                                visible="{= ${upload>/uploadProgress} > 0}"
+                                percentValue="{upload>/uploadProgress}"
+                                showValue="true"
+                                state="{upload>/uploadStatusType}"
+                                class="sapUiSmallMarginTop"/>
+                        </VBox>
+                    </content>
+                </Panel>
+                
+                <!-- Optimization Controls Panel -->
+                <Panel id="_IDGenPanel2" headerText="{i18n>optimizationControlsTitle}" class="sapUiSmallMargin">
+                    <layoutData>
+                        <l:GridData id="_IDGenGridData" span="L12 M12 S12"/>
+                    </layoutData>
+                    <content>
+                            <f:SimpleForm id="_IDGenSimpleForm"
+                                editable="true"
+                                layout="ResponsiveGridLayout"
+                                labelSpanXL="4"
+                                labelSpanL="4"
+                                labelSpanM="12"
+                                labelSpanS="12"
+                                adjustLabelSpan="false"
+                                emptySpanXL="0"
+                                emptySpanL="0"
+                                emptySpanM="0"
+                                emptySpanS="0"
+                                columnsXL="2"
+                                columnsL="2"
+                                columnsM="1"
+                                singleContainerFullSize="false">
+                                <f:content>
+                                    <Label id="_IDGenLabel" text="{i18n>populationSize}"/>
+                                    <Input 
+                                        id="populationSize"
+                                        type="Number"
+                                        value="{optimization>/populationSize}"
+                                        enabled="{= !${optimization>/isRunning}}"/>
+                                    
+                                    <Label id="_IDGenLabel1" text="{i18n>generations}"/>
+                                    <Input 
+                                        id="generations"
+                                        type="Number"
+                                        value="{optimization>/generations}"
+                                        enabled="{= !${optimization>/isRunning}}"/>
+                                    
+                                    <Label id="_IDGenLabel2" text="{i18n>mutationRate}"/>
+                                    <Input 
+                                        id="mutationRate"
+                                        type="Number"
+                                        value="{optimization>/mutationRate}"
+                                        enabled="{= !${optimization>/isRunning}}"/>
+                                    
+                                    <Label id="_IDGenLabel3" text="{i18n>method}"/>
+                                    <Select 
+                                        id="optimizationMethod"
+                                        selectedKey="{optimization>/method}"
+                                        enabled="{= !${optimization>/isRunning}}">
+                                        <items>
+                                            <core:Item id="_IDGenItem" key="genetic" text="{i18n>geneticAlgorithm}"/>
+                                            <core:Item id="_IDGenItem1" key="simulated_annealing" text="{i18n>simulatedAnnealing}"/>
+                                            <core:Item id="_IDGenItem2" key="particle_swarm" text="{i18n>particleSwarm}"/>
+                                        </items>
+                                    </Select>
+                                </f:content>
+                            </f:SimpleForm>
+                            
+                            <HBox id="_IDGenHBox1" class="sapUiSmallMargin">
+                                <Button id="_IDGenButton3" 
+                                    text="{i18n>startOptimization}"
+                                    type="Success"
+                                    press="onStartOptimization"
+                                    visible="{= !${optimization>/isRunning}}"
+                                    class="sapUiTinyMarginEnd"/>
+                                <Button id="_IDGenButton4" 
+                                    text="{i18n>stopOptimization}"
+                                    type="Reject"
+                                    press="onStopOptimization"
+                                    visible="{optimization>/isRunning}"/>
+                            </HBox>
+                            
+                            <VBox id="_IDGenVBox2" visible="{optimization>/isRunning}" class="sapUiSmallMargin">
+                                <BusyIndicator id="_IDGenBusyIndicator1" text="{i18n>runningOptimization}"/>
+                            </VBox>
+                            
+                            <!-- Results -->
+                            <l:Grid id="_IDGenGrid1" 
+                                defaultSpan="L3 M6 S12" 
+                                visible="{= ${optimization>/results/bestFitness} !== null}"
+                                class="sapUiSmallMarginTop">
+                                
+                                <ObjectStatus id="_IDGenObjectStatus"
+                                    title="{i18n>bestFitness}"
+                                    text="{path: 'optimization>/results/bestFitness', formatter: '.formatter.formatNumber'}"
+                                    state="Success"
+                                    class="sapUiSmallMargin"/>
+                                    
+                                <ObjectStatus id="_IDGenObjectStatus1"
+                                    title="{i18n>totalCost}"
+                                    text="{path: 'optimization>/results/totalCost', formatter: '.formatter.formatCurrency'}"
+                                    state="Information"
+                                    class="sapUiSmallMargin"/>
+                                    
+                                <ObjectStatus id="_IDGenObjectStatus2"
+                                    title="{i18n>efficiency}"
+                                    text="{path: 'optimization>/results/efficiency', formatter: '.formatter.formatPercentage'}"
+                                    state="Success"
+                                    class="sapUiSmallMargin"/>
+                                    
+                                <ObjectStatus id="_IDGenObjectStatus3"
+                                    title="{i18n>runtime}"
+                                    text="{optimization>/results/runtime} s"
+                                    state="None"
+                                    class="sapUiSmallMargin"/>
+                            </l:Grid>
+                            
+                        </content>
+                    </Panel>
+                
+            </l:Grid>
+        </content>
+        
+    </Page>
+</mvc:View>
