@@ -357,7 +357,7 @@ sap.ui.define([
                 } else {
                     MessageBox.show('Failed to cancel optimization', 'error');
                 }
-                MessageToast.show("Cancellation requested.");
+                // MessageToast.show("Cancellation requested.");
             } catch (error) {
                 showStatus(`Failed to stop optimization: ${error.message}`, 'error');
                 that.resetOptimizationUI();
