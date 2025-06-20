@@ -198,6 +198,7 @@ sap.ui.define([
         },
 
         onStartOptimization: async function () {
+            this.byId("_IDGenButton1").setVisible(false);
             this._currentJobId = null;
             var oOptimizationModel = this.getView().getModel("optimization");
             var oData = oOptimizationModel.getData();
@@ -236,10 +237,11 @@ sap.ui.define([
                 }
                 // Direct results returned
                 // MessageBox.show(result.message);
-                this.resetOptimizationUI();
+                // this.resetOptimizationUI();
             } catch (error) {
                 MessageBox.show(`Optimization failed: ${error.message}`, 'error');
                 this.resetOptimizationUI();
+                this.byId("_IDGenButton1").setVisible(true);
             }
         },
         resetOptimizationUI: function () {
@@ -288,41 +290,84 @@ sap.ui.define([
                 try {
                     const response = await fetch(finalURL);
                     const data = await response.json();
-
-                    if (data.status === 'completed') {
-                        clearInterval(that._pollingInterval);
+                    if (data.status === 'running') {
+                        oOptimizationModel.setProperty("/isRunning", true);
+                    } else if (data.status === 'completed') {
+                        console.log('✅ Optimization completed:', data.result);
+                        MessageToast.show("Optimization completed successfully", 'success');
                         oOptimizationModel.setProperty("/isRunning", false);
-                        MessageToast.show("Optimization completed");
-
-                        // Download or handle results
-                        if (data.downloadUrl) {
-                            window.open(data.downloadUrl, '_blank'); // or trigger download
+                        clearInterval(that._pollingInterval);
+                        that.resetOptimizationUI();
+                        this.byId("_IDGenButton1").setVisible(true);
+                    } else if (data.status === 'cancelled' || data.status === 'error') {
+                        if (data.error && data.error.includes('cancelled')) {
+                            MessageToast.show('Optimization was cancelled', 'info');
+                        } else {
+                            MessageToast.show(`Optimization failed: ${data.error}`, 'error');
                         }
-
-                        // Optionally show summary, fitness, etc.
-                        console.log("Optimization Results", data.results);
-                    } else if (data.status === 'error') {
-                        clearInterval(that._pollingInterval);
                         oOptimizationModel.setProperty("/isRunning", false);
-                        MessageBox.error(`Optimization failed: ${data.error}`);
+                        clearInterval(that._pollingInterval);
+                        that.resetOptimizationUI();
+                        this.byId("_IDGenButton1").setVisible(true);
                     }
+
+                    // if (data.status === 'completed') {
+                    //     clearInterval(that._pollingInterval);
+                    //     oOptimizationModel.setProperty("/isRunning", false);
+                    //     MessageToast.show("Optimization completed");
+
+                    //     // Download or handle results
+                    //     if (data.downloadUrl) {
+                    //         window.open(data.downloadUrl, '_blank'); // or trigger download
+                    //     }
+
+                    //     // Optionally show summary, fitness, etc.
+                    //     console.log("Optimization Results", data.results);
+                    // } else if (data.status === 'error') {
+                    //     clearInterval(that._pollingInterval);
+                    //     oOptimizationModel.setProperty("/isRunning", false);
+                    //     MessageBox.error(`Optimization failed: ${data.error}`);
+                    // }
                 } catch (err) {
                     clearInterval(that._pollingInterval);
                     oOptimizationModel.setProperty("/isRunning", false);
                     MessageBox.error(`Polling failed: ${err.message}`);
+                    this.byId("_IDGenButton1").setVisible(true);
                 }
             }, 5000); // Poll every 5 seconds
         },
         onStopOptimization: async function () {
             if (this._currentJobId) {
+                const fullJobId = this._currentJobId;
+                const that = this;
                 const origin = window.location.origin;
                 const contextPath = window.location.pathname.replace(/\/index\.html$/, '');
-                const finalURL = `${origin}${contextPath}` + (`/api/planning/optimize/cancel/${this._currentJobId}`);
-                await fetch(finalURL, {
-                    method: 'POST'
+                const finalURL = `${origin}${contextPath}` + (`/api/planning/optimize/stop`);
+                // await fetch(finalURL, {
+                //     method: 'POST'
+                // });
+                try {
+                const response = await fetch(finalURL, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ fullJobId})
                 });
-                clearInterval(this._pollingInterval);
-                MessageBox.show("Cancellation requested.", 'info');
+                if (response.ok) {
+                    MessageToast.show('Cancellation request sent', 'info');
+                } else {
+                    MessageBox.show('Failed to cancel optimization', 'error');
+                }
+                MessageToast.show("Cancellation requested.");
+            } catch (error) {
+                showStatus(`Failed to stop optimization: ${error.message}`, 'error');
+                that.resetOptimizationUI();
+            }
+                // clearInterval(this._pollingInterval);
+                
+            }
+            else{
+                this.byId("_IDGenButton1").setVisible(true);
+                MessageToast.show("No optimization found");
             }
         }
     });
