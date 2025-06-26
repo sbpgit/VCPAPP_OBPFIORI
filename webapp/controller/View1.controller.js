@@ -66,6 +66,38 @@ sap.ui.define([
                 MessageBox.error(err.message || this.getResourceBundle().getText("downloadError", [filename]));
             }
         },
+        onDownloadPivotTemplate: async function () {
+            const origin = window.location.origin;
+            const contextPath = window.location.pathname.replace(/\/index\.html$/, '');
+            const finalURL = `${origin}${contextPath}` + ("/api/planning/downloadPivot-results");
+            const filename = "optimization_results_Capacity_Pivot.xlsx"
+            try {
+                const response3 = await fetch(finalURL, {
+                    method: "GET",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+
+                })
+                if (!response3.ok) {
+                    throw new Error(`Download failed: ${response3.statusText}`);
+                }
+
+                const blob = await response3.blob();
+                const url = window.URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = filename;
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                window.URL.revokeObjectURL(url);
+                MessageToast.show(this.getResourceBundle().getText("downloadSuccess", [filename]));
+            }
+            catch (err) {
+                MessageBox.error(err.message || this.getResourceBundle().getText("downloadError", [filename]));
+            }
+        },
         _downloadFile: async function (filename, finalUrl, requestData) {
             MessageToast.show(this.getResourceBundle().getText("downloadingFile", [filename]));
             console.log("URL:", finalUrl);
@@ -199,6 +231,7 @@ sap.ui.define([
 
         onStartOptimization: async function () {
             this.byId("_IDGenButton1").setVisible(false);
+            this.byId("_IDGenButton21").setVisible(false);
             this._currentJobId = null;
             var oOptimizationModel = this.getView().getModel("optimization");
             var oData = oOptimizationModel.getData();
@@ -208,7 +241,11 @@ sap.ui.define([
                 populationSize: parseInt(oData.populationSize),
                 generations: parseInt(oData.generations),
                 mutationRate: parseFloat(oData.mutationRate),
-                method: oData.method
+                method: oData.method,
+                promiseDatePreference:parseFloat(oData.promiseDatePreference),
+                timingVarianceWeeks:parseInt(oData.timingVarianceWeeks),
+                unnecessaryDelayPenalty:parseInt(oData.unnecessaryDelayPenalty),
+                perfectTimingBonus:parseInt(oData.perfectTimingBonus)
             };
 
             MessageToast.show(this.getResourceBundle().getText("startingOptimization"));
@@ -242,6 +279,7 @@ sap.ui.define([
                 MessageBox.show(`Optimization failed: ${error.message}`, 'error');
                 this.resetOptimizationUI();
                 this.byId("_IDGenButton1").setVisible(true);
+                this.byId("_IDGenButton21").setVisible(true);
             }
         },
         resetOptimizationUI: function () {
@@ -299,6 +337,7 @@ sap.ui.define([
                         clearInterval(that._pollingInterval);
                         that.resetOptimizationUI();
                         this.byId("_IDGenButton1").setVisible(true);
+                        this.byId("_IDGenButton21").setVisible(true);
                     } else if (data.status === 'cancelled' || data.status === 'error') {
                         if (data.error && data.error.includes('cancelled')) {
                             MessageToast.show('Optimization was cancelled', 'info');
@@ -309,6 +348,7 @@ sap.ui.define([
                         clearInterval(that._pollingInterval);
                         that.resetOptimizationUI();
                         this.byId("_IDGenButton1").setVisible(true);
+                        this.byId("_IDGenButton21").setVisible(true);
                     }
 
                     // if (data.status === 'completed') {
@@ -333,6 +373,7 @@ sap.ui.define([
                     oOptimizationModel.setProperty("/isRunning", false);
                     MessageBox.error(`Polling failed: ${err.message}`);
                     this.byId("_IDGenButton1").setVisible(true);
+                    this.byId("_IDGenButton21").setVisible(true);
                 }
             }, 5000); // Poll every 5 seconds
         },
@@ -367,6 +408,7 @@ sap.ui.define([
             }
             else{
                 this.byId("_IDGenButton1").setVisible(true);
+                this.byId("_IDGenButton21").setVisible(true);
                 MessageToast.show("No optimization found");
             }
         }

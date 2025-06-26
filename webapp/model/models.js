@@ -37,6 +37,10 @@ sap.ui.define([
                 generations: 100,
                 mutationRate: 0.1,
                 method: "genetic",
+                promiseDatePreference:0.7,
+                timingVarianceWeeks:3,
+                unnecessaryDelayPenalty:100,
+                perfectTimingBonus:50,
                 isRunning: false,
                 results: {
                     bestFitness: null,

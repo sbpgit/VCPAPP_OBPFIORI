@@ -28,6 +28,10 @@
                                     text="{i18n>downloadResultsTemplate}" 
                                     type="Success"
                                     press="onDownloadResultsTemplate"/>
+                                    <Button id="_IDGenButton21" 
+                                    text="{i18n>downloadPivotTemplate}" 
+                                    type="Success"
+                                    press="onDownloadPivotTemplate"/>
                             </HBox>
                         </VBox>
                     </content>
@@ -108,6 +112,34 @@
                                         value="{optimization>/mutationRate}"
                                         enabled="{= !${optimization>/isRunning}}"/>
                                     
+                                    <Label id="_IDGenLabel21" text="{i18n>PromiseDatePreference}"/>
+                                    <Input 
+                                        id="PromiseDatePreference"
+                                        type="Number"
+                                        value="{optimization>/promiseDatePreference}"
+                                        enabled="{= !${optimization>/isRunning}}"/>
+
+                                    <Label id="_IDGenLabel22" text="{i18n>TimingVarianceWeeks}"/>
+                                    <Input 
+                                        id="TimingVarianceWeeks"
+                                        type="Number"
+                                        value="{optimization>/timingVarianceWeeks}"
+                                        enabled="{= !${optimization>/isRunning}}"/>
+
+                                    <Label id="_IDGenLabel23" text="{i18n>UnnecessaryDelayPenalty}"/>
+                                    <Input 
+                                        id="UnnecessaryDelayPenalty"
+                                        type="Number"
+                                        value="{optimization>/unnecessaryDelayPenalty}"
+                                        enabled="{= !${optimization>/isRunning}}"/>
+
+                                    <Label id="_IDGenLabel24" text="{i18n>PerfectTimingBonus}"/>
+                                    <Input 
+                                        id="PerfectTimingBonus"
+                                        type="Number"
+                                        value="{optimization>/perfectTimingBonus}"
+                                        enabled="{= !${optimization>/isRunning}}"/>
+
                                     <Label id="_IDGenLabel3" text="{i18n>method}"/>
                                     <Select 
                                         id="optimizationMethod"
