@@ -29,7 +29,7 @@ sap.ui.define([
             const origin = window.location.origin;
             const contextPath = window.location.pathname.replace(/\/index\.html$/, '');
             const finalURL = `${origin}${contextPath}`;
-            this._downloadFile("sample_data.xlsx", finalURL, {
+            this._downloadFile("sample_data_daily.xlsx", finalURL, {
                 planningStartDate: "2025-05-29",
                 minEarlyDeliveryDays: 7
             });
@@ -37,8 +37,8 @@ sap.ui.define([
         onDownloadResultsTemplate: async function () {
             const origin = window.location.origin;
             const contextPath = window.location.pathname.replace(/\/index\.html$/, '');
-            const finalURL = `${origin}${contextPath}` + ("/api/planning/download-results");
-            const filename = "optimization_results.xlsx"
+            const finalURL = `${origin}${contextPath}` + ("/api/planning/download-results-daily");
+            const filename = "optimization_results_daily.xlsx"
             try {
                 const response2 = await fetch(finalURL, {
                     method: "GET",
@@ -69,8 +69,8 @@ sap.ui.define([
         onDownloadPivotTemplate: async function () {
             const origin = window.location.origin;
             const contextPath = window.location.pathname.replace(/\/index\.html$/, '');
-            const finalURL = `${origin}${contextPath}` + ("/api/planning/downloadPivot-results");
-            const filename = "optimization_results_Capacity_Pivot.xlsx"
+            const finalURL = `${origin}${contextPath}` + ("/api/planning/downloadPivot-results-daily");
+            const filename = "optimization_results_daily_Capacity_Pivot.xlsx"
             try {
                 const response3 = await fetch(finalURL, {
                     method: "GET",
@@ -105,7 +105,7 @@ sap.ui.define([
             console.log("Request Data JSON:", JSON.stringify(requestData));
             sap.ui.core.BusyIndicator.show();
             try {
-                var url2 = finalUrl + ('/api/planning/generate-sample')
+                var url2 = finalUrl + ('/api/planning/generate-sample-daily')
                 const response = await fetch(url2, {
                     method: "POST",
                     headers: {
@@ -120,7 +120,7 @@ sap.ui.define([
                     sap.ui.core.BusyIndicator.hide();
                     return MessageBox.error(this.getResourceBundle().getText("downloadError", [filename]));
                 }
-                var finalsampleURL = finalUrl + ("/api/planning/download-sample");
+                var finalsampleURL = finalUrl + ("/api/planning/download-sample-daily");
                 const response1 = await fetch(finalsampleURL, {
                     method: "GET",
                     headers: {
@@ -175,7 +175,7 @@ sap.ui.define([
             //set upload URL
             const origin = window.location.origin;
             const contextPath = window.location.pathname.replace(/\/index\.html$/, '');
-            const finalURL = `${origin}${contextPath}` + ("/api/planning/upload");
+            const finalURL = `${origin}${contextPath}` + ("/api/planning/uploadDaily");
             oFileUploader.setUploadUrl(finalURL)
             // Add header parameter for CSRF token if needed
             var oHeaderParameter = new sap.ui.unified.FileUploaderParameter({
@@ -253,7 +253,7 @@ sap.ui.define([
             try {
                 var url1 = window.location.href;
                 url1 = url1.replace(/\/index\.html$/, '');
-                var finalURL = url1 + ("/api/planning/optimize");
+                var finalURL = url1 + ("/api/planning/optimizeDaily");
                 const responseOptimiz = await fetch(finalURL, {
                     method: 'POST',
                     headers: {
