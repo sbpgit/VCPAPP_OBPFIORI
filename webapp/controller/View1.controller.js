@@ -243,7 +243,7 @@ sap.ui.define([
                 mutationRate: parseFloat(oData.mutationRate),
                 method: oData.method,
                 promiseDatePreference:parseFloat(oData.promiseDatePreference),
-                timingVarianceWeeks:parseInt(oData.timingVarianceWeeks),
+                timingVarianceDays:parseInt(oData.timingVarianceWeeks),
                 unnecessaryDelayPenalty:parseInt(oData.unnecessaryDelayPenalty),
                 perfectTimingBonus:parseInt(oData.perfectTimingBonus)
             };
