@@ -38,7 +38,7 @@ sap.ui.define([
                 mutationRate: 0.1,
                 method: "genetic",
                 promiseDatePreference:0.7,
-                timingVarianceWeeks:3,
+                timingVarianceWeeks:7,
                 unnecessaryDelayPenalty:100,
                 perfectTimingBonus:50,
                 isRunning: false,

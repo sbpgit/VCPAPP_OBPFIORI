@@ -29,8 +29,10 @@ sap.ui.define([
             const origin = window.location.origin;
             const contextPath = window.location.pathname.replace(/\/index\.html$/, '');
             const finalURL = `${origin}${contextPath}`;
+            const today = new Date();
+                    const formattedDate = today.toISOString().split('T')[0];
             this._downloadFile("sample_data_daily.xlsx", finalURL, {
-                planningStartDate: "2025-05-29",
+                planningStartDate: formattedDate,
                 minEarlyDeliveryDays: 7
             });
         },
@@ -48,7 +50,7 @@ sap.ui.define([
 
                 })
                 if (!response2.ok) {
-                    throw new Error(`Download failed: ${response.statusText}`);
+                    throw new Error(`Download failed: ${response2.statusText}`);
                 }
 
                 const blob = await response2.blob();
@@ -220,7 +222,8 @@ sap.ui.define([
             } else {
                 oUploadModel.setProperty("/uploadStatus", this.getResourceBundle().getText("uploadError"));
                 oUploadModel.setProperty("/uploadStatusType", "Error");
-                MessageBox.error(this.getResourceBundle().getText("uploadError"));
+                // MessageBox.error(this.getResourceBundle().getText("uploadError"));
+                MessageBox.error(match.message);
             }
 
             // Reset progress after 2 seconds
@@ -264,8 +267,9 @@ sap.ui.define([
 
                 if (!responseOptimiz.ok) {
                     const errorData = await responseOptimiz.json();
+                    this.resetOptimizationUI();
                     sap.ui.core.BusyIndicator.hide();
-                    return MessageBox.error(errorData.message || "Optimization failed to start");
+                    return MessageBox.error(errorData.message || "Optimization failed to start");           
                 }
                 const result = await responseOptimiz.json();
                 if (result.success) {
